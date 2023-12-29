@@ -22,7 +22,13 @@ import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.components.zeroconf import async_get_instance
-from homeassistant.const import CONF_HOST, CONF_NAME, CONF_EMAIL, CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import (
+    CONF_HOST,
+    CONF_NAME,
+    CONF_EMAIL,
+    CONF_PASSWORD,
+    CONF_USERNAME,
+)
 from homeassistant.exceptions import HomeAssistantError
 
 from .const import CONF_CREDENTIAL, CONF_DEVICE_TYPE, CONF_SERIAL, DOMAIN
@@ -127,15 +133,10 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 return await self.async_step_mobile()
             return await self.async_step_email()
 
-        region_names = {
-            code: f"{name} ({code})"
-            for code, name in REGIONS.items()
-        }
+        region_names = {code: f"{name} ({code})" for code, name in REGIONS.items()}
         return self.async_show_form(
             step_id="cloud",
-            data_schema=vol.Schema({
-                vol.Required(CONF_REGION): vol.In(region_names)
-            }),
+            data_schema=vol.Schema({vol.Required(CONF_REGION): vol.In(region_names)}),
         )
 
     async def async_step_email(self, info: Optional[dict] = None):
@@ -165,9 +166,11 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         info = info or {}
         return self.async_show_form(
             step_id="email",
-            data_schema=vol.Schema({
-                vol.Required(CONF_EMAIL, default=info.get(CONF_EMAIL, "")): str,
-            }),
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_EMAIL, default=info.get(CONF_EMAIL, "")): str,
+                }
+            ),
             errors=errors,
         )
 
@@ -186,15 +189,17 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     data={
                         CONF_REGION: self._region,
                         CONF_AUTH: auth_info,
-                    }
+                    },
                 )
 
         return self.async_show_form(
             step_id="email_otp",
-            data_schema=vol.Schema({
-                vol.Required(CONF_PASSWORD): str,
-                vol.Required(CONF_OTP): str,
-            }),
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_PASSWORD): str,
+                    vol.Required(CONF_OTP): str,
+                }
+            ),
             errors=errors,
         )
 
@@ -218,9 +223,11 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         info = info or {}
         return self.async_show_form(
             step_id="mobile",
-            data_schema=vol.Schema({
-                vol.Required(CONF_MOBILE, default=info.get(CONF_MOBILE, "")): str,
-            }),
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_MOBILE, default=info.get(CONF_MOBILE, "")): str,
+                }
+            ),
             errors=errors,
         )
 
@@ -239,14 +246,16 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     data={
                         CONF_REGION: self._region,
                         CONF_AUTH: auth_info,
-                    }
+                    },
                 )
 
         return self.async_show_form(
             step_id="mobile_otp",
-            data_schema=vol.Schema({
-                vol.Required(CONF_OTP): str,
-            }),
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_OTP): str,
+                }
+            ),
             errors=errors,
         )
 
