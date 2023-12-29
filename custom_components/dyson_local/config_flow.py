@@ -390,6 +390,11 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             discovered = threading.Event()
 
             def _callback(address: str) -> None:
+                """
+
+                :param address: str: 
+
+                """
                 _LOGGER.debug("Found device at %s", address)
                 nonlocal host
                 host = address
