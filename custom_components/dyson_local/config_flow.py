@@ -44,6 +44,7 @@ SETUP_METHODS = {
     "manual": "Setup manually",
 }
 
+
 class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Dyson local config flow."""
 
@@ -137,7 +138,7 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             }),
         )
 
-    async def async_step_email(self, info: Optional[dict]=None):
+    async def async_step_email(self, info: Optional[dict] = None):
         errors = {}
         if info is not None:
             email = info[CONF_EMAIL]
@@ -170,7 +171,7 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
-    async def async_step_email_otp(self, info: Optional[dict]=None):
+    async def async_step_email_otp(self, info: Optional[dict] = None):
         errors = {}
         if info is not None:
             try:
@@ -197,7 +198,7 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
-    async def async_step_mobile(self, info: Optional[dict]=None):
+    async def async_step_mobile(self, info: Optional[dict] = None):
         errors = {}
         if info is not None:
             account = DysonAccountCN()
@@ -223,7 +224,7 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
-    async def async_step_mobile_otp(self, info: Optional[dict]=None):
+    async def async_step_mobile_otp(self, info: Optional[dict] = None):
         errors = {}
         if info is not None:
             try:
@@ -248,7 +249,6 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             }),
             errors=errors,
         )
-
 
     async def async_step_manual(self, info: Optional[dict] = None):
         """Handle step to setup manually."""
