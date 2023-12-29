@@ -72,7 +72,8 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="user",
-            data_schema=vol.Schema({vol.Required(CONF_METHOD): vol.In(SETUP_METHODS)}),
+            data_schema=vol.Schema(
+                {vol.Required(CONF_METHOD): vol.In(SETUP_METHODS)}),
         )
 
     async def async_step_wifi(self, info: Optional[dict] = None):
@@ -81,8 +82,7 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if info is not None:
             try:
                 serial, credential, device_type = get_mqtt_info_from_wifi_info(
-                    info[CONF_SSID], info[CONF_PASSWORD]
-                )
+                    info[CONF_SSID], info[CONF_PASSWORD])
             except DysonFailedToParseWifiInfo:
                 errors["base"] = "cannot_parse_wifi_info"
             else:
@@ -114,15 +114,15 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         info = info or {}
         return self.async_show_form(
             step_id="wifi",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_SSID, default=info.get(CONF_SSID, "")): str,
-                    vol.Required(
-                        CONF_PASSWORD, default=info.get(CONF_PASSWORD, "")
-                    ): str,
-                    vol.Optional(CONF_HOST, default=info.get(CONF_HOST, "")): str,
-                }
-            ),
+            data_schema=vol.Schema({
+                vol.Required(CONF_SSID, default=info.get(CONF_SSID, "")):
+                str,
+                vol.Required(CONF_PASSWORD,
+                             default=info.get(CONF_PASSWORD, "")):
+                str,
+                vol.Optional(CONF_HOST, default=info.get(CONF_HOST, "")):
+                str,
+            }),
             errors=errors,
         )
 
@@ -133,10 +133,14 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 return await self.async_step_mobile()
             return await self.async_step_email()
 
-        region_names = {code: f"{name} ({code})" for code, name in REGIONS.items()}
+        region_names = {
+            code: f"{name} ({code})"
+            for code, name in REGIONS.items()
+        }
         return self.async_show_form(
             step_id="cloud",
-            data_schema=vol.Schema({vol.Required(CONF_REGION): vol.In(region_names)}),
+            data_schema=vol.Schema(
+                {vol.Required(CONF_REGION): vol.In(region_names)}),
         )
 
     async def async_step_email(self, info: Optional[dict] = None):
@@ -153,8 +157,7 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             account = DysonAccount()
             try:
                 self._verify = await self.hass.async_add_executor_job(
-                    account.login_email_otp, email, self._region
-                )
+                    account.login_email_otp, email, self._region)
             except DysonNetworkError:
                 errors["base"] = "cannot_connect_cloud"
             except DysonInvalidAccountStatus:
@@ -166,11 +169,10 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         info = info or {}
         return self.async_show_form(
             step_id="email",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_EMAIL, default=info.get(CONF_EMAIL, "")): str,
-                }
-            ),
+            data_schema=vol.Schema({
+                vol.Required(CONF_EMAIL, default=info.get(CONF_EMAIL, "")):
+                str,
+            }),
             errors=errors,
         )
 
@@ -179,8 +181,7 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if info is not None:
             try:
                 auth_info = await self.hass.async_add_executor_job(
-                    self._verify, info[CONF_OTP], info[CONF_PASSWORD]
-                )
+                    self._verify, info[CONF_OTP], info[CONF_PASSWORD])
             except DysonLoginFailure:
                 errors["base"] = "invalid_auth"
             else:
@@ -194,12 +195,10 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="email_otp",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_PASSWORD): str,
-                    vol.Required(CONF_OTP): str,
-                }
-            ),
+            data_schema=vol.Schema({
+                vol.Required(CONF_PASSWORD): str,
+                vol.Required(CONF_OTP): str,
+            }),
             errors=errors,
         )
 
@@ -212,8 +211,7 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 mobile = f"+86{mobile}"
             try:
                 self._verify = await self.hass.async_add_executor_job(
-                    account.login_mobile_otp, mobile
-                )
+                    account.login_mobile_otp, mobile)
             except DysonOTPTooFrequently:
                 errors["base"] = "otp_too_frequent"
             else:
@@ -223,11 +221,10 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         info = info or {}
         return self.async_show_form(
             step_id="mobile",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_MOBILE, default=info.get(CONF_MOBILE, "")): str,
-                }
-            ),
+            data_schema=vol.Schema({
+                vol.Required(CONF_MOBILE, default=info.get(CONF_MOBILE, "")):
+                str,
+            }),
             errors=errors,
         )
 
@@ -236,8 +233,7 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if info is not None:
             try:
                 auth_info = await self.hass.async_add_executor_job(
-                    self._verify, info[CONF_OTP]
-                )
+                    self._verify, info[CONF_OTP])
             except DysonLoginFailure:
                 errors["base"] = "invalid_otp"
             else:
@@ -251,11 +247,9 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="mobile_otp",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_OTP): str,
-                }
-            ),
+            data_schema=vol.Schema({
+                vol.Required(CONF_OTP): str,
+            }),
             errors=errors,
         )
 
@@ -295,18 +289,18 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         info = info or {}
         return self.async_show_form(
             step_id="manual",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_SERIAL, default=info.get(CONF_SERIAL, "")): str,
-                    vol.Required(
-                        CONF_CREDENTIAL, default=info.get(CONF_CREDENTIAL, "")
-                    ): str,
-                    vol.Required(
-                        CONF_DEVICE_TYPE, default=info.get(CONF_DEVICE_TYPE, "")
-                    ): vol.In(DEVICE_TYPE_NAMES),
-                    vol.Optional(CONF_HOST, default=info.get(CONF_HOST, "")): str,
-                }
-            ),
+            data_schema=vol.Schema({
+                vol.Required(CONF_SERIAL, default=info.get(CONF_SERIAL, "")):
+                str,
+                vol.Required(CONF_CREDENTIAL,
+                             default=info.get(CONF_CREDENTIAL, "")):
+                str,
+                vol.Required(CONF_DEVICE_TYPE,
+                             default=info.get(CONF_DEVICE_TYPE, "")):
+                vol.In(DEVICE_TYPE_NAMES),
+                vol.Optional(CONF_HOST, default=info.get(CONF_HOST, "")):
+                str,
+            }),
             errors=errors,
         )
 
@@ -335,9 +329,10 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         info = info or {}
         return self.async_show_form(
             step_id="host",
-            data_schema=vol.Schema(
-                {vol.Optional(CONF_HOST, default=info.get(CONF_HOST, "")): str}
-            ),
+            data_schema=vol.Schema({
+                vol.Optional(CONF_HOST, default=info.get(CONF_HOST, "")):
+                str
+            }),
             errors=errors,
         )
 
@@ -402,8 +397,7 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             discovery.register_device(device, _callback)
             discovery.start_discovery(await async_get_instance(self.hass))
             succeed = await self.hass.async_add_executor_job(
-                discovered.wait, DISCOVERY_TIMEOUT
-            )
+                discovered.wait, DISCOVERY_TIMEOUT)
             discovery.stop_discovery()
             if not succeed:
                 _LOGGER.debug("Discovery timed out")
@@ -415,7 +409,8 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         except DysonInvalidCredential:
             raise InvalidAuth
         except DysonException as err:
-            _LOGGER.debug(f"Failed to connect to device: {type(err).__name__}, {err}")
+            _LOGGER.debug(
+                f"Failed to connect to device: {type(err).__name__}, {err}")
             raise CannotConnect
 
 
