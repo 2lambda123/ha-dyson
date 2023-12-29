@@ -390,7 +390,7 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             def _callback(address: str) -> None:
                 """
 
-                :param address: str: 
+                :param address: str:
 
                 """
                 _LOGGER.debug("Found device at %s", address)
