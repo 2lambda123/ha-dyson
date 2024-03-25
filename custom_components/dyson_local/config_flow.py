@@ -4,30 +4,38 @@ import logging
 import threading
 from typing import Optional
 
-from .vendor.libdyson import DEVICE_TYPE_NAMES, get_device, get_mqtt_info_from_wifi_info
-from .vendor.libdyson.cloud import DysonDeviceInfo
-from .vendor.libdyson.discovery import DysonDiscovery
-from .vendor.libdyson.exceptions import (
-    DysonException,
-    DysonFailedToParseWifiInfo,
-    DysonInvalidCredential,
-    DysonNetworkError,
-    DysonOTPTooFrequently,
-    DysonInvalidAccountStatus,
-    DysonLoginFailure,
-)
-from .vendor.libdyson.cloud import DysonAccount, DysonAccountCN, REGIONS
-
 import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.components.zeroconf import async_get_instance
-from homeassistant.const import CONF_HOST, CONF_NAME, CONF_EMAIL, CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import (
+    CONF_EMAIL,
+    CONF_HOST,
+    CONF_NAME,
+    CONF_PASSWORD,
+    CONF_USERNAME,
+)
 from homeassistant.exceptions import HomeAssistantError
 
+from .cloud.const import CONF_AUTH, CONF_REGION
 from .const import CONF_CREDENTIAL, CONF_DEVICE_TYPE, CONF_SERIAL, DOMAIN
-
-from .cloud.const import CONF_REGION, CONF_AUTH
+from .vendor.libdyson import DEVICE_TYPE_NAMES, get_device, get_mqtt_info_from_wifi_info
+from .vendor.libdyson.cloud import (
+    REGIONS,
+    DysonAccount,
+    DysonAccountCN,
+    DysonDeviceInfo,
+)
+from .vendor.libdyson.discovery import DysonDiscovery
+from .vendor.libdyson.exceptions import (
+    DysonException,
+    DysonFailedToParseWifiInfo,
+    DysonInvalidAccountStatus,
+    DysonInvalidCredential,
+    DysonLoginFailure,
+    DysonNetworkError,
+    DysonOTPTooFrequently,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -43,6 +51,7 @@ SETUP_METHODS = {
     "cloud": "Setup automatically with your MyDyson Account",
     "manual": "Setup manually",
 }
+
 
 class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Dyson local config flow."""
@@ -126,18 +135,13 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 return await self.async_step_mobile()
             return await self.async_step_email()
 
-        region_names = {
-            code: f"{name} ({code})"
-            for code, name in REGIONS.items()
-        }
+        region_names = {code: f"{name} ({code})" for code, name in REGIONS.items()}
         return self.async_show_form(
             step_id="cloud",
-            data_schema=vol.Schema({
-                vol.Required(CONF_REGION): vol.In(region_names)
-            }),
+            data_schema=vol.Schema({vol.Required(CONF_REGION): vol.In(region_names)}),
         )
 
-    async def async_step_email(self, info: Optional[dict]=None):
+    async def async_step_email(self, info: Optional[dict] = None):
         errors = {}
         if info is not None:
             email = info[CONF_EMAIL]
@@ -164,13 +168,15 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         info = info or {}
         return self.async_show_form(
             step_id="email",
-            data_schema=vol.Schema({
-                vol.Required(CONF_EMAIL, default=info.get(CONF_EMAIL, "")): str,
-            }),
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_EMAIL, default=info.get(CONF_EMAIL, "")): str,
+                }
+            ),
             errors=errors,
         )
 
-    async def async_step_email_otp(self, info: Optional[dict]=None):
+    async def async_step_email_otp(self, info: Optional[dict] = None):
         errors = {}
         if info is not None:
             try:
@@ -185,19 +191,21 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     data={
                         CONF_REGION: self._region,
                         CONF_AUTH: auth_info,
-                    }
+                    },
                 )
 
         return self.async_show_form(
             step_id="email_otp",
-            data_schema=vol.Schema({
-                vol.Required(CONF_PASSWORD): str,
-                vol.Required(CONF_OTP): str,
-            }),
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_PASSWORD): str,
+                    vol.Required(CONF_OTP): str,
+                }
+            ),
             errors=errors,
         )
 
-    async def async_step_mobile(self, info: Optional[dict]=None):
+    async def async_step_mobile(self, info: Optional[dict] = None):
         errors = {}
         if info is not None:
             account = DysonAccountCN()
@@ -217,13 +225,15 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         info = info or {}
         return self.async_show_form(
             step_id="mobile",
-            data_schema=vol.Schema({
-                vol.Required(CONF_MOBILE, default=info.get(CONF_MOBILE, "")): str,
-            }),
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_MOBILE, default=info.get(CONF_MOBILE, "")): str,
+                }
+            ),
             errors=errors,
         )
 
-    async def async_step_mobile_otp(self, info: Optional[dict]=None):
+    async def async_step_mobile_otp(self, info: Optional[dict] = None):
         errors = {}
         if info is not None:
             try:
@@ -238,17 +248,18 @@ class DysonLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     data={
                         CONF_REGION: self._region,
                         CONF_AUTH: auth_info,
-                    }
+                    },
                 )
 
         return self.async_show_form(
             step_id="mobile_otp",
-            data_schema=vol.Schema({
-                vol.Required(CONF_OTP): str,
-            }),
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_OTP): str,
+                }
+            ),
             errors=errors,
         )
-
 
     async def async_step_manual(self, info: Optional[dict] = None):
         """Handle step to setup manually."""

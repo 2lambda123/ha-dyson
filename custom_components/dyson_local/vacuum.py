@@ -2,13 +2,6 @@
 
 from typing import Any, Callable, List, Mapping
 
-from .vendor.libdyson import (
-    Dyson360Eye,
-    VacuumEyePowerMode,
-    VacuumHeuristPowerMode,
-    VacuumState,
-)
-
 from homeassistant.components.vacuum import (
     ATTR_STATUS,
     STATE_CLEANING,
@@ -30,6 +23,12 @@ from homeassistant.core import HomeAssistant
 
 from . import DysonEntity
 from .const import DATA_DEVICES, DOMAIN
+from .vendor.libdyson import (
+    Dyson360Eye,
+    VacuumEyePowerMode,
+    VacuumHeuristPowerMode,
+    VacuumState,
+)
 
 SUPPORTED_FEATURES = (
     SUPPORT_START
