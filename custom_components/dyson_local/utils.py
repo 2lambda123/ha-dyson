@@ -2,9 +2,13 @@
 
 from typing import Any, Optional
 
-from .vendor.libdyson.const import ENVIRONMENTAL_FAIL, ENVIRONMENTAL_INIT, ENVIRONMENTAL_OFF
-
 from homeassistant.const import STATE_OFF
+
+from .vendor.libdyson.const import (
+    ENVIRONMENTAL_FAIL,
+    ENVIRONMENTAL_INIT,
+    ENVIRONMENTAL_OFF,
+)
 
 STATE_INIT = "init"
 STATE_FAIL = "fail"

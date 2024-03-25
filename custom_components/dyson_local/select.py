@@ -2,15 +2,6 @@
 
 from typing import Callable
 
-from .vendor.libdyson import (
-    DysonPureCoolLink,
-    DysonPureHotCoolLink,
-    DysonPurifierHumidifyCool,
-    HumidifyOscillationMode,
-    WaterHardness,
-)
-from .vendor.libdyson.const import AirQualityTarget
-
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_NAME
@@ -19,6 +10,14 @@ from homeassistant.helpers.entity import EntityCategory
 
 from . import DysonEntity
 from .const import DATA_DEVICES, DOMAIN
+from .vendor.libdyson import (
+    DysonPureCoolLink,
+    DysonPureHotCoolLink,
+    DysonPurifierHumidifyCool,
+    HumidifyOscillationMode,
+    WaterHardness,
+)
+from .vendor.libdyson.const import AirQualityTarget
 
 AIR_QUALITY_TARGET_ENUM_TO_STR = {
     AirQualityTarget.OFF: "Off",

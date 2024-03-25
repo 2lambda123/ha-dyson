@@ -7,6 +7,7 @@ import requests
 from requests.auth import AuthBase, HTTPBasicAuth
 
 from ..exceptions import (
+    DysonAPIProvisionFailure,
     DysonAuthRequired,
     DysonInvalidAccountStatus,
     DysonInvalidAuth,
@@ -14,16 +15,12 @@ from ..exceptions import (
     DysonNetworkError,
     DysonOTPTooFrequently,
     DysonServerError,
-    DysonAPIProvisionFailure,
 )
-
 from .device_info import DysonDeviceInfo
 
 DYSON_API_HOST = "https://appapi.cp.dyson.com"
 DYSON_API_HOST_CN = "https://appapi.cp.dyson.cn"
-DYSON_API_HEADERS = {
-    "User-Agent": "android client"
-}
+DYSON_API_HEADERS = {"User-Agent": "android client"}
 
 API_PATH_PROVISION_APP = "/v1/provisioningservice/application/Android/version"
 API_PATH_USER_STATUS = "/v3/userregistration/email/userstatus"
@@ -34,6 +31,7 @@ API_PATH_MOBILE_VERIFY = "/v3/userregistration/mobile/verify"
 API_PATH_DEVICES = "/v2/provisioningservice/manifest"
 
 FILE_PATH = pathlib.Path(__file__).parent.absolute()
+
 
 class HTTPBearerAuth(AuthBase):
     """Attaches HTTP Bearder Authentication to the given Request object."""
