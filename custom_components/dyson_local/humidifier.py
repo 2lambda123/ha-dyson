@@ -2,8 +2,6 @@
 
 from typing import Callable, Optional
 
-from .vendor.libdyson import MessageType
-
 from homeassistant.components.humidifier import (
     DEVICE_CLASS_HUMIDIFIER,
     SUPPORT_MODES,
@@ -16,6 +14,7 @@ from homeassistant.core import HomeAssistant
 
 from . import DysonEntity
 from .const import DATA_DEVICES, DOMAIN
+from .vendor.libdyson import MessageType
 
 AVAILABLE_MODES = [MODE_NORMAL, MODE_AUTO]
 
