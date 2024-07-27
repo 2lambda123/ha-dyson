@@ -6,35 +6,15 @@ from functools import partial
 import logging
 from typing import List, Optional
 
-from .vendor.libdyson import (
-    Dyson360Eye,
-    Dyson360Heurist,
-    DysonPureHotCool,
-    DysonPureHotCoolLink,
-    DysonPurifierHumidifyCool,
-    MessageType,
-    get_device,
-)
-from .vendor.libdyson.cloud import (
-    DysonAccountCN,
-    DysonAccount,
-)
-from .vendor.libdyson.discovery import DysonDiscovery
-from .vendor.libdyson.dyson_device import DysonDevice
-from .vendor.libdyson.exceptions import (
-    DysonException,
-    DysonNetworkError,
-    DysonLoginFailure,
-)
-
 from homeassistant.components.zeroconf import async_get_instance
-from homeassistant.config_entries import ConfigEntry, SOURCE_DISCOVERY
+from homeassistant.config_entries import SOURCE_DISCOVERY, ConfigEntry
 from homeassistant.const import CONF_HOST, EVENT_HOMEASSISTANT_STOP
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
+from .cloud.const import CONF_AUTH, CONF_REGION, DATA_ACCOUNT, DATA_DEVICES
 from .const import (
     CONF_CREDENTIAL,
     CONF_DEVICE_TYPE,
@@ -44,12 +24,22 @@ from .const import (
     DATA_DISCOVERY,
     DOMAIN,
 )
-
-from .cloud.const import (
-    CONF_REGION,
-    CONF_AUTH,
-    DATA_ACCOUNT,
-    DATA_DEVICES,
+from .vendor.libdyson import (
+    Dyson360Eye,
+    Dyson360Heurist,
+    DysonPureHotCool,
+    DysonPureHotCoolLink,
+    DysonPurifierHumidifyCool,
+    MessageType,
+    get_device,
+)
+from .vendor.libdyson.cloud import DysonAccount, DysonAccountCN
+from .vendor.libdyson.discovery import DysonDiscovery
+from .vendor.libdyson.dyson_device import DysonDevice
+from .vendor.libdyson.exceptions import (
+    DysonException,
+    DysonLoginFailure,
+    DysonNetworkError,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -212,7 +202,11 @@ def _async_get_platforms(device: DysonDevice) -> List[str]:
         platforms.extend(["binary_sensor", "climate"])
     if isinstance(device, DysonPurifierHumidifyCool):
         platforms.append("humidifier")
-    if hasattr(device, "filter_life") or hasattr(device, "carbon_filter_life") or hasattr(device, "hepa_filter_life"):
+    if (
+        hasattr(device, "filter_life")
+        or hasattr(device, "carbon_filter_life")
+        or hasattr(device, "hepa_filter_life")
+    ):
         platforms.append("button")
     return platforms
 

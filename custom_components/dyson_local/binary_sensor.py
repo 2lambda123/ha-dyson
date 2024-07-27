@@ -2,8 +2,6 @@
 
 from typing import Callable
 
-from .vendor.libdyson import Dyson360Eye, Dyson360Heurist, DysonPureHotCoolLink
-
 from homeassistant.components.binary_sensor import (
     DEVICE_CLASS_BATTERY_CHARGING,
     BinarySensorEntity,
@@ -15,6 +13,7 @@ from homeassistant.helpers.entity import EntityCategory
 
 from . import DysonEntity
 from .const import DATA_DEVICES, DOMAIN
+from .vendor.libdyson import Dyson360Eye, Dyson360Heurist, DysonPureHotCoolLink
 
 ICON_BIN_FULL = "mdi:delete-variant"
 

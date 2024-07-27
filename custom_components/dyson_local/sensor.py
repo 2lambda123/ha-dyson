@@ -1,20 +1,12 @@
 """Sensor platform for dyson."""
 
-from typing import Callable, Union, Optional
+from typing import Callable, Optional, Union
 
-from .vendor.libdyson import (
-    Dyson360Eye,
-    Dyson360Heurist,
-    DysonDevice,
-    DysonPureCoolLink,
-    DysonPurifierHumidifyCool,
-    DysonBigQuiet,
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorEntity,
+    SensorStateClass,
 )
-
-from .vendor.libdyson.const import MessageType
-from .vendor.libdyson.dyson_device import DysonFanDevice
-
-from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass, SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
@@ -35,6 +27,16 @@ from homeassistant.helpers.update_coordinator import (
 from . import DysonEntity
 from .const import DATA_COORDINATORS, DATA_DEVICES, DOMAIN
 from .utils import environmental_property
+from .vendor.libdyson import (
+    Dyson360Eye,
+    Dyson360Heurist,
+    DysonBigQuiet,
+    DysonDevice,
+    DysonPureCoolLink,
+    DysonPurifierHumidifyCool,
+)
+from .vendor.libdyson.const import MessageType
+from .vendor.libdyson.dyson_device import DysonFanDevice
 
 
 async def async_setup_entry(
@@ -62,7 +64,10 @@ async def async_setup_entry(
             )
         else:
             if isinstance(device, DysonBigQuiet):
-                if hasattr(device, "carbon_dioxide") and device.carbon_dioxide is not None:
+                if (
+                    hasattr(device, "carbon_dioxide")
+                    and device.carbon_dioxide is not None
+                ):
                     entities.append(DysonCarbonDioxideSensor(coordinator, device, name))
 
             entities.extend(
@@ -218,6 +223,7 @@ class DysonNextDeepCleanSensor(DysonSensor):
         """Return available only if device not in off, init or failed states."""
         return isinstance(self._device.time_until_next_clean, (int, float))
 
+
 class DysonHumiditySensor(DysonSensorEnvironmental):
     """Dyson humidity sensor."""
 
@@ -312,6 +318,7 @@ class DysonPM10Sensor(DysonSensorEnvironmental):
 
 class DysonParticulatesSensor(DysonSensorEnvironmental):
     """Dyson sensor for particulate matters for "Link" devices."""
+
     _SENSOR_TYPE = "aqi"
     _SENSOR_NAME = "Air Quality Index"
     _attr_device_class = SensorDeviceClass.AQI
